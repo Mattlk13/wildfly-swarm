@@ -10,8 +10,7 @@
   <parent>
     <groupId>io.thorntail.servers</groupId>
     <artifactId>standalone-servers</artifactId>
-    <version>2.5.1.Final-SNAPSHOT</version>
-    <relativePath>../</relativePath>
+    <version>2.7.1.Final-SNAPSHOT</version>
   </parent>
 
   <artifactId>microprofile-jpa</artifactId>

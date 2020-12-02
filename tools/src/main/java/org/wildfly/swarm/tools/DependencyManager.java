@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015-2017 Red Hat, Inc, and individual contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.jar.JarFile;
@@ -154,9 +157,19 @@ public class DependencyManager implements ResolvedDependencies {
         // resolve the explicit deps to local files
         // expand to transitive if these are not pre-solved
         boolean resolveExplicitsTransitively = !declaredDependencies.isPresolved() || autodetect;
-        Collection<ArtifactSpec> resolvedExplicitDependencies = resolveExplicitsTransitively ?
-                resolver.resolveAllArtifactsTransitively(explicitDependencies, false) :
-                resolver.resolveAllArtifactsNonTransitively(explicitDependencies);
+        Map<Boolean, List<ArtifactSpec>> partitioned = explicitDependencies.stream()
+                .collect(Collectors.partitioningBy(declaredDependencies::isComplete));
+        List<ArtifactSpec> complete = partitioned.get(true);
+        List<ArtifactSpec> incomplete = partitioned.get(false);
+
+        Collection<ArtifactSpec> resolvedIncompleteExplicitDependencies = resolveExplicitsTransitively ?
+                resolver.resolveAllArtifactsTransitively(incomplete, false) :
+                resolver.resolveAllArtifactsNonTransitively(incomplete);
+        Collection<ArtifactSpec> resolvedCompleteExplicitDependencies = resolver.resolveAllArtifactsNonTransitively(complete);
+
+        Collection<ArtifactSpec> resolvedExplicitDependencies = new LinkedHashSet<>();
+        resolvedExplicitDependencies.addAll(resolvedCompleteExplicitDependencies);
+        resolvedExplicitDependencies.addAll(resolvedIncompleteExplicitDependencies);
 
         this.dependencies.addAll(resolvedExplicitDependencies);
 
@@ -198,6 +211,9 @@ public class DependencyManager implements ResolvedDependencies {
         this.dependencies.addAll(
                 resolver.resolveAllArtifactsNonTransitively(remainder)
         );
+
+        // populate the dependency map for faster lookups
+        this.dependencies.forEach(s -> dependencyMap.put(s.mavenGav(), s));
     }
 
     private void filterOutRunnerDependencies(ArtifactSpec runnerJar, Collection<ArtifactSpec> explicitDependencies) {
@@ -221,7 +237,17 @@ public class DependencyManager implements ResolvedDependencies {
 
     private void analyzeModuleDependencies(ModuleAnalyzer analyzer) {
         List<ArtifactSpec> thorntailDependencies = analyzer.getDependencies();
-        this.moduleDependencies.addAll(thorntailDependencies);
+
+        // ModuleAnalyzer looks for dependencies in a predefined location and assumes that the folder conforms to the
+        // Maven repository layout. If it doesn't find the dependency in that location, then the ModuleAnalyzer will
+        // return an ArtifactSpec object that does not contain the file location. But when using the Gradle plugin, it
+        // is highly possible that the dependency was already retrieved and stored in the Gradle dependency cache.
+
+        this.moduleDependencies.addAll(
+                thorntailDependencies.stream()
+                        .map(s -> s.file != null ? s : dependencyMap.getOrDefault(s.mavenGav(), s))
+                        .collect(Collectors.toList())
+        );
     }
 
     private void analyzeFractionManifests() {
@@ -441,6 +467,8 @@ public class DependencyManager implements ResolvedDependencies {
     private final List<FractionManifest> fractionManifests = new ArrayList<>();
 
     private final Set<ArtifactSpec> dependencies = new HashSet<>();
+
+    private final Map<String, ArtifactSpec> dependencyMap = new HashMap<>();
 
     private final Set<ArtifactSpec> removableDependencies = new HashSet<>();
 

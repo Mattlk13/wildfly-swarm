@@ -4,11 +4,13 @@
   <parent>
     <groupId>io.thorntail.testsuite</groupId>
     <artifactId>testsuite-parent</artifactId>
-    <version>2.5.1.Final-SNAPSHOT</version>
-    <relativePath>../</relativePath>
+    <version>2.7.1.Final-SNAPSHOT</version>
   </parent>
 
   <artifactId>testsuite-jaeger-opentracing</artifactId>
+
+  <name>Test Suite: Jaeger + OpenTracing</name>
+  <description>Test Suite: Jaeger + OpenTracing</description>
 
   <dependencies>
     <dependency>

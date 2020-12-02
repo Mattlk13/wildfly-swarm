@@ -5,8 +5,8 @@
 The {Thorntail} Maven plugin accepts the following configuration options:
 
 bundleDependencies::
-If true, dependencies are included in the `-thorntail.jar` file.
-Otherwise, they are resolved from `$M2_REPO` or from the network at runtime.
+If `true`, dependencies are included in the `-thorntail.jar` file.
+Otherwise, they are resolved from local Maven repository or from the network at runtime.
 +
 [cols="1,2a"]
 |===
@@ -19,6 +19,23 @@ Otherwise, they are resolved from `$M2_REPO` or from the network at runtime.
 |Used by
 |`package`
 |===
+
+[NOTE]
+--
+In case you set `bundleDependencies` to `false`, a local Maven repository is used at runtime.
+The location of the Maven repository is retrieved either from a `settings.xml` file, or from a system property.
+
+. If a `settings.xml` file is found and it defines a local repository, then this repository is used.
+  The following locations are searched for the `settings.xml` file.
+  The first occurrence of the file is used to retrieve the location of the Maven repository:
+.. If the `jboss.modules.settings.xml.url` system property is defined, then the `settings.xml` file defined in this property is used.
+   The value must be a `+file://...+` URL .
+.. If the `~/.m2/settings.xml` file exists, then it is used.
+.. If the `$M2_HOME/conf/settings.xml` file exists, then it is used.
+. If the path to the Maven repository is not defined in a `settings.xml` file, then:
+.. If the `maven.repo.local` system property is defined, then this repository is used.
+.. Otherwise the standard location `~/.m2/repository` is used.
+--
 
 debug::
 The port to use for debugging.
@@ -67,7 +84,8 @@ A `.properties` file with environment variables to use when executing the applic
 |===
 
 filterWebInfLib::
-If true, the plugin removes artifacts that are provided by the Thorntail runtime from the `WEB-INF/lib` directory of the project WAR file.
+If `true`, the plugin removes artifacts that are provided by the Thorntail runtime from the `WEB-INF/lib` directory of the project WAR file.
+If `uberjar-only`, this transformation is only done on the WAR file that is put into the uberjar, and the standalone WAR file remains untouched.
 Otherwise, the contents of `WEB-INF/lib` remain untouched.
 +
 [cols="1,2a"]

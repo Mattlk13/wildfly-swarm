@@ -25,6 +25,8 @@ import org.wildfly.swarm.tools.ArtifactResolvingHelper;
 import org.wildfly.swarm.tools.ArtifactSpec;
 
 /**
+ * An implementation of the {@link ArtifactResolvingHelper} for Gradle based builds.
+ *
  * @author Bob McWhirter
  */
 public class GradleArtifactResolvingHelper implements ArtifactResolvingHelper {
@@ -37,6 +39,10 @@ public class GradleArtifactResolvingHelper implements ArtifactResolvingHelper {
         this.project.getRepositories().maven(repo -> {
             repo.setName("jboss-public");
             repo.setUrl("https://repository.jboss.org/nexus/content/groups/public/");
+        });
+        this.project.getRepositories().maven(repo -> {
+            repo.setName("redhat-ga");
+            repo.setUrl("https://maven.repository.redhat.com/ga/");
         });
     }
 

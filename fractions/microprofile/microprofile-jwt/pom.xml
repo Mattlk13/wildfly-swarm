@@ -10,7 +10,7 @@
   <parent>
     <groupId>io.thorntail</groupId>
     <artifactId>build-parent</artifactId>
-    <version>2.5.1.Final-SNAPSHOT</version>
+    <version>2.7.1.Final-SNAPSHOT</version>
     <relativePath>../../../build-parent/pom.xml</relativePath>
   </parent>
 
@@ -62,13 +62,13 @@
       <artifactId>msc</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.enterprise</groupId>
-      <artifactId>cdi-api</artifactId>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -95,6 +95,10 @@
       <artifactId>smallrye-jwt</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jboss.spec.javax.annotation</groupId>
+      <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.bitbucket.b_c</groupId>
       <artifactId>jose4j</artifactId>
       <version>${version.jose4j}</version>
@@ -108,12 +112,6 @@
       <artifactId>jaxrs</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
-      <version>${version.javaee-api}</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.picketbox</groupId>
       <artifactId>picketbox</artifactId>
@@ -147,6 +145,19 @@
     <dependency>
       <groupId>org.wildfly</groupId>
       <artifactId>wildfly-feature-pack</artifactId>
+      <type>zip</type>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- needs to come _after_ WildFly feature packs, because in case of conflicts, the last one wins -->
+    <dependency>
+      <groupId>io.thorntail</groupId>
+      <artifactId>microprofile-config-wildfly-feature-pack</artifactId>
       <type>zip</type>
       <scope>provided</scope>
       <exclusions>

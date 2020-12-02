@@ -75,6 +75,11 @@ public class MavenArtifactResolvingHelper implements ArtifactResolvingHelper {
                                                           null,
                                                           ENABLED_POLICY,
                                                           DISABLED_POLICY));
+        this.remoteRepositories.add(buildRemoteRepository("redhat-ga",
+                                                          "https://maven.repository.redhat.com/ga/",
+                                                          null,
+                                                          ENABLED_POLICY,
+                                                          DISABLED_POLICY));
     }
 
     public void remoteRepository(ArtifactRepository repo) {
@@ -102,9 +107,7 @@ public class MavenArtifactResolvingHelper implements ArtifactResolvingHelper {
             } else {
                 try {
                     final ArtifactResult result = resolver.resolveArtifact(this.session,
-                                                                           new ArtifactRequest(artifact,
-                                                                                               this.remoteRepositories,
-                                                                                               null));
+                            new ArtifactRequest(artifact, this.remoteRepositories, null));
                     if (result.isResolved()) {
                         spec.file = result.getArtifact().getFile();
                     }

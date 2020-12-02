@@ -54,6 +54,10 @@ import static java.util.Arrays.asList;
  *         to keep in WEB-INF/lib even though they are dependencies of Swarm elements
  *     </li>
  *     <li>
+ *         <b>thorntail.runner.extra-dependencies</b> - a comma-separated list of groupId:artifactId[:packaging[:classifier]]:version of artifacts
+ *         to add to the classpath (because the IDE didn't)
+ *     </li>
+ *     <li>
  *         <b>thorntail.runner.main-class</b> - user's main class replacing the default org.wildfly.swarm.Swarm class.
  *         Please note that using custom main class is discouraged.
  *     </li>
@@ -63,12 +67,12 @@ import static java.util.Arrays.asList;
  *     </li>
  *     <li>
  *         <b>thorntail.runner.repositories</b> - additional maven repositories to look for artifacts.
- *         By default Runner searches for artifacts in Maven Central and repository.jboss.org.
+ *         By default Runner searches for artifacts in Maven Central, repository.jboss.org and maven.repository.redhat.com.
  *         Expects a comma separated list of repositoryUrl[#username#password].
  *     </li>
  *     <li>
  *         <b>thorntail.runner.ignore-default-repositories</b> - disable default configured maven repositories
- *         By default Runner searches for artifacts in Maven Central and repository.jboss.org.
+ *         By default Runner searches for artifacts in Maven Central, repository.jboss.org and maven.repository.redhat.com.
  *         You can disable this for security reasons.
  *     </li>
  *     <li>

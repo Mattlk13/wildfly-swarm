@@ -70,7 +70,7 @@ public class CachingArtifactResolvingHelper implements ArtifactResolvingHelper {
         if (spec.file == null) {
             File maybeFile = artifactCache.getCachedFile(spec);
             if (!artifactCache.isKnownFailure(spec) && maybeFile == null) {
-                System.out.println("no cached file for " + spec.mscGav());
+                System.out.println("no cached file for " + spec.mavenGav());
                 maybeFile = resolveArtifactFile(spec);
                 artifactCache.storeArtifactFile(spec, maybeFile);
             }
@@ -104,6 +104,12 @@ public class CachingArtifactResolvingHelper implements ArtifactResolvingHelper {
                     session,
                     "jboss-public-repository-group",
                     "https://repository.jboss.org/nexus/content/groups/public/",
+                    null,
+                    null));
+            this.remoteRepositories.add(buildRemoteRepository(
+                    session,
+                    "redhat-ga",
+                    "https://maven.repository.redhat.com/ga/",
                     null,
                     null));
             this.remoteRepositories.add(buildRemoteRepository(
@@ -198,12 +204,10 @@ public class CachingArtifactResolvingHelper implements ArtifactResolvingHelper {
             dependencyCache.storeCachedDependencies(specs, dependencyNodes, defaultExcludes);
         }
 
-        Collection<ArtifactSpec> result = resolveDependencies(dependencyNodes);
-        return result;
+        return resolveDependencies(dependencyNodes);
     }
 
     private Collection<ArtifactSpec> resolveDependencies(List<ArtifactSpec> dependencyNodes) {
-        long start = System.currentTimeMillis();
         // if dependencies were previously resolved, we don't need to resolve using remote repositories
         dependencyNodes = new ArrayList<>(dependencyNodes);
 
